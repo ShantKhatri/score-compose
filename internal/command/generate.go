@@ -444,11 +444,16 @@ func loadRawScoreFiles(fileNames []string) ([]string, map[string]map[string]inte
 		}
 
 		var workloadName string
-		if meta, ok := out["metadata"].(map[string]interface{}); ok {
-			workloadName, _ = meta["name"].(string)
-			if _, ok := workloadToRawScore[workloadName]; ok {
-				return nil, nil, fmt.Errorf("workload name '%s' in file '%s' is used more than once", workloadName, fileName)
-			}
+		meta, ok := out["metadata"].(map[string]interface{})
+		if !ok {
+			return nil, nil, fmt.Errorf("workload in file '%s' is missing required metadata", fileName)
+		}
+		workloadName, _ = meta["name"].(string)
+		if len(workloadName) == 0 {
+			return nil, nil, fmt.Errorf("workload in file '%s' has empty metadata.name", fileName)
+		}
+		if _, ok := workloadToRawScore[workloadName]; ok {
+			return nil, nil, fmt.Errorf("workload name '%s' in file '%s' is used more than once", workloadName, fileName)
 		}
 		workloadNames = append(workloadNames, workloadName)
 		workloadToRawScore[workloadName] = out

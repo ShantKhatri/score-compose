@@ -1,0 +1,8 @@
+apiVersion: score.dev/v1b1
+
+# metadata block intentionally omitted to reproduce the loader bug
+containers:
+  app:
+    image: busybox
+    command: ["/bin/sh"]
+    args: ["-c", "echo file2"]
